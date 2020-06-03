@@ -2,12 +2,13 @@
 
 #include <windows.h>
 
+#include "renderer.h"
+
 bool bRunning = true; // do game loop
 
 struct RenderState
 {
-    int height, width;
-    void* memory; // window buffer memory
+    renderer::WindowRect windowRect;
     BITMAPINFO bitmapInfo;
 };
 
@@ -28,22 +29,22 @@ LRESULT CALLBACK windowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         {
             RECT rect;
             GetClientRect(hwnd, &rect);
-            renderState.width = rect.right - rect.left; // find new dimensions
-            renderState.height = rect.bottom - rect.top;
+            renderState.windowRect.width = rect.right - rect.left; // find new dimensions
+            renderState.windowRect.height = rect.bottom - rect.top;
 
             // make buffer
-            int bufferSize = renderState.width * renderState.height * sizeof(unsigned int);
+            int bufferSize = renderState.windowRect.width * renderState.windowRect.height * sizeof(unsigned int);
 
-            if (renderState.memory) // memory already allocated
+            if (renderState.windowRect.buffer) // memory already allocated
             {
-                VirtualFree(renderState.memory, 0, MEM_RELEASE);
+                VirtualFree(renderState.windowRect.buffer, 0, MEM_RELEASE);
             }
 
-            renderState.memory = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+            renderState.windowRect.buffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
             renderState.bitmapInfo.bmiHeader.biSize = sizeof(renderState.bitmapInfo.bmiHeader);
-            renderState.bitmapInfo.bmiHeader.biWidth = renderState.width;
-            renderState.bitmapInfo.bmiHeader.biHeight = renderState.height;
+            renderState.bitmapInfo.bmiHeader.biWidth = renderState.windowRect.width;
+            renderState.bitmapInfo.bmiHeader.biHeight = renderState.windowRect.height;
             renderState.bitmapInfo.bmiHeader.biPlanes = 1;
             renderState.bitmapInfo.bmiHeader.biBitCount = 32;
             renderState.bitmapInfo.bmiHeader.biCompression = BI_RGB;
@@ -83,17 +84,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         }
 
         // simulate
-    unsigned int* pixel = (unsigned int*)renderState.memory;
-        for (int y = 0; y < renderState.height; y++)
-        {
-            for (int x = 0; x < renderState.width; x++)
-            {
-                *pixel++ = 0xff00ff * x + 0x00ff00 * y;
-            }
-        }
+        ///renderer::fillScreen(0x808080);
+        ///renderer::drawRect(50, 50, 200, 500, 0xff0000);
+        renderer::renderBackground(renderState.windowRect);
 
-        // render
-        StretchDIBits(hdc, 0, 0, renderState.width, renderState.height, 0, 0, renderState.width, renderState.height, renderState.memory, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);
+        // render - put window buffer to screen
+        StretchDIBits(hdc, 0, 0, renderState.windowRect.width, renderState.windowRect.height, 0, 0, renderState.windowRect.width, renderState.windowRect.height, renderState.windowRect.buffer, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);
     }
     return 0;
 }
