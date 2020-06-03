@@ -84,9 +84,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         }
 
         // simulate
-        ///renderer::fillScreen(0x808080);
-        ///renderer::drawRect(50, 50, 200, 500, 0xff0000);
-        renderer::renderBackground(renderState.windowRect);
+        renderer::fillScreen(renderState.windowRect, 0xffffff);
+        renderer::drawRect(renderState.windowRect, 50, 200, 50, 500, 0x000000);
 
         // render - put window buffer to screen
         StretchDIBits(hdc, 0, 0, renderState.windowRect.width, renderState.windowRect.height, 0, 0, renderState.windowRect.width, renderState.windowRect.height, renderState.windowRect.buffer, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);
