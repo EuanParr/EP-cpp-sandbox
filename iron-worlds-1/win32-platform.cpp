@@ -79,13 +79,26 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         MSG message;
         while (PeekMessage(&message, window, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&message);
-            DispatchMessage(&message);
+            switch (message.message)
+            {
+            case (WM_KEYUP):
+            case (WM_KEYDOWN):
+                {
+                    unsigned int keyOrd = (unsigned int)message.wParam;
+                    bool bKeyDown = ((message.lParam & (1 << 31)))
+                }
+                break;
+            default:
+                {
+                    TranslateMessage(&message);
+                    DispatchMessage(&message);
+                }
+            }
         }
 
         // simulate
-        renderer::fillScreen(renderState.windowRect, 0xffffff);
-        renderer::drawRect(renderState.windowRect, 50, 200, 50, 500, 0x000000);
+        renderer::fillScreen(renderState.windowRect, 0x808080);
+        renderer::drawRect(renderState.windowRect, 50, 200, 50, 500, 0x0000ff);
 
         // render - put window buffer to screen
         StretchDIBits(hdc, 0, 0, renderState.windowRect.width, renderState.windowRect.height, 0, 0, renderState.windowRect.width, renderState.windowRect.height, renderState.windowRect.buffer, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);
