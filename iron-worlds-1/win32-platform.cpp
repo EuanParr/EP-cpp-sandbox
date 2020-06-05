@@ -73,6 +73,13 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     HWND window = CreateWindow(WindowClass.lpszClassName, "Iron Worlds 1", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
     HDC hdc = GetDC(window); // get device context - reference for drawing to window
 
+    float xVel = 1;
+    float yVel = 0;
+    float xPos = 0;
+    int xInt = xPos;
+    int yPos = 340;
+    bool doMove = false;
+
     while (bRunning)
     {
         // get input
@@ -85,7 +92,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
             case (WM_KEYDOWN):
                 {
                     unsigned int keyOrd = (unsigned int)message.wParam;
-                    bool bKeyDown = ((message.lParam & (1 << 31)))
+                    bool bKeyDown = (((message.lParam & (1 << 31)) == 0)); // gets flag for determining up/down
+                    doMove = bKeyDown;
                 }
                 break;
             default:
@@ -97,8 +105,14 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         }
 
         // simulate
+        if (doMove)
+        {
+            xVel += 0;
+            xPos += xVel;
+        }
+        xInt = xPos;
         renderer::fillScreen(renderState.windowRect, 0x808080);
-        renderer::drawRect(renderState.windowRect, 50, 200, 50, 500, 0x0000ff);
+        renderer::drawRect(renderState.windowRect, xInt, xInt + 20, yPos, yPos + 20, 0x0000ff);
 
         // render - put window buffer to screen
         StretchDIBits(hdc, 0, 0, renderState.windowRect.width, renderState.windowRect.height, 0, 0, renderState.windowRect.width, renderState.windowRect.height, renderState.windowRect.buffer, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);

@@ -1,0 +1,4 @@
+So. How to do keys? Zaidan's approach seems useful: for each key, 2 bools: is it down?, and has that changed since the last frame?
+But how to do the 'for each key'? Windows gives each key a name, and other platforms will give them different names, so I need a platform-specific encoding into a platform-independent format.
+Then I need an abstraction buffer so that keybinds can be customised at some point. The keybind customisation should not be achieved through 1-to-1 mapping with keys because in all likelihood there will be multiple possible actions per key and it would be good to allow them to be rebound seperately.
+So, each e.g. VKey is mapped to a platform-independent value in set x, and each 'action' is mapped to a value in set y, and then a many-to-1 mapping is made from y to x.

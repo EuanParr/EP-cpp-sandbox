@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="platform-tools.cpp" />
+		<Unit filename="platform-tools.h" />
 		<Unit filename="renderer.cpp" />
 		<Unit filename="renderer.h" />
 		<Unit filename="win32-platform.cpp" />
