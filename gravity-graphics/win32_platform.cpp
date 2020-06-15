@@ -1,6 +1,7 @@
 // win32-dependent component
 
 #include <windows.h>
+#include <math.h>
 
 #include "renderer.h"
 
@@ -70,15 +71,26 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     RegisterClass(&WindowClass);
 
     // create the window
-    HWND window = CreateWindow(WindowClass.lpszClassName, "Iron Worlds 1", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
+    HWND window = CreateWindow(WindowClass.lpszClassName, "Gravity", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
     HDC hdc = GetDC(window); // get device context - reference for drawing to window
 
-    float xVel = 1;
+    float xVel = 2;
+    float thrust = 0.01;
     float yVel = 0;
-    float xPos = 0;
+    float xPos = 640;
+    float yPos = 160;
     int xInt = xPos;
-    int yPos = 340;
-    bool doMove = false;
+    int yInt = yPos;
+    bool moveRight = false;
+    bool moveLeft = false;
+    bool moveUp = false;
+    bool moveDown = false;
+
+    float gStrength = 1000;
+    int gravX = 640;
+    int gravY = 360;
+    float squaredDist;
+    float gravForce;
 
     while (bRunning)
     {
@@ -93,7 +105,21 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
                 {
                     unsigned int keyOrd = (unsigned int)message.wParam;
                     bool bKeyDown = (((message.lParam & (1 << 31)) == 0)); // gets flag for determining up/down
-                    doMove = bKeyDown;
+                    switch (message.wParam)
+                    {
+                    case (VK_RIGHT):
+                        moveRight = bKeyDown;
+                        break;
+                    case (VK_LEFT):
+                        moveLeft = bKeyDown;
+                        break;
+                    case (VK_UP):
+                        moveUp = bKeyDown;
+                        break;
+                    case (VK_DOWN):
+                        moveDown = bKeyDown;
+                        break;
+                    }
                 }
                 break;
             default:
@@ -105,17 +131,27 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         }
 
         // simulate
-        if (doMove)
-        {
-            xVel += 0;
-            xPos += xVel;
-        }
+
+        squaredDist = (gravX - xPos) * (gravX - xPos) + (gravY - yPos) * (gravY - yPos);
+        gravForce = gStrength * pow(squaredDist, -1.5);
+        xVel += gravForce * (gravX - xPos);
+        yVel += gravForce * (gravY - yPos);
+
+        xVel += thrust * (moveRight - moveLeft);
+        yVel += thrust * (moveUp - moveDown);
+        xPos += xVel;
+        yPos += yVel;
         xInt = xPos;
-        renderer::fillScreen(renderState.windowRect, 0x808080);
-        renderer::drawRect(renderState.windowRect, xInt, xInt + 20, yPos, yPos + 20, 0x0000ff);
+        yInt = yPos;
+        renderer::fillScreen(renderState.windowRect, 0x000020);
+        renderer::drawRect(renderState.windowRect, xInt - 10, xInt + 10, yInt - 10, yInt + 10, 0xff0000); // draw craft
+        renderer::drawRect(renderState.windowRect, gravX - 10, gravX + 10, gravY - 10, gravY + 10, 0x00ff00); // draw planet
 
         // render - put window buffer to screen
         StretchDIBits(hdc, 0, 0, renderState.windowRect.width, renderState.windowRect.height, 0, 0, renderState.windowRect.width, renderState.windowRect.height, renderState.windowRect.buffer, &(renderState.bitmapInfo), DIB_RGB_COLORS, SRCCOPY);
+
+        // It does not need to process all the time - doing so causes unusual power consumption.
+        Sleep(8);
     }
     return 0;
 }

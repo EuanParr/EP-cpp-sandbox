@@ -1,0 +1,37 @@
+# depslib dependency file v1.0
+1591288968 source:c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\platform-tools.cpp
+
+1591627951 source:c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\renderer.cpp
+	"renderer.h"
+
+1591221224 c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\renderer.h
+
+1591395561 source:c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\win32-platform.cpp
+	<windows.h>
+	"renderer.h"
+
+1591469701 source:c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\platform_tools.cpp
+	"platform_tools.h"
+
+1591607200 c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\platform_tools.h
+
+1592252905 source:c:\users\euan parr\github\iron-worlds-1\iron-worlds-1\win32_platform.cpp
+	<windows.h>
+	<math.h>
+	"renderer.h"
+
+1591469701 source:c:\users\euan parr\github\ep-cpp-sandbox\gravity-graphics\platform_tools.cpp
+	"platform_tools.h"
+
+1591607200 c:\users\euan parr\github\ep-cpp-sandbox\gravity-graphics\platform_tools.h
+
+1591627951 source:c:\users\euan parr\github\ep-cpp-sandbox\gravity-graphics\renderer.cpp
+	"renderer.h"
+
+1591221224 c:\users\euan parr\github\ep-cpp-sandbox\gravity-graphics\renderer.h
+
+1592252905 source:c:\users\euan parr\github\ep-cpp-sandbox\gravity-graphics\win32_platform.cpp
+	<windows.h>
+	<math.h>
+	"renderer.h"
+

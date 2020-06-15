@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="iron-worlds-1" />
+		<Option title="gravity-graphics" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -31,11 +31,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="platform-tools.cpp" />
-		<Unit filename="platform-tools.h" />
+		<Unit filename="platform_tools.cpp" />
+		<Unit filename="platform_tools.h" />
 		<Unit filename="renderer.cpp" />
 		<Unit filename="renderer.h" />
-		<Unit filename="win32-platform.cpp" />
+		<Unit filename="win32_platform.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
