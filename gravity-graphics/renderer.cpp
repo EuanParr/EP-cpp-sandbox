@@ -14,7 +14,7 @@ namespace renderer{
     }
 
     int rangeRestrict(int val, int lower, int upper)
-    {
+    { // used to prevent drawings going off-screen causing memory errors
         if (val < lower)
         {
             return lower;
@@ -30,7 +30,7 @@ namespace renderer{
     }
 
     void drawRect(WindowRect windowRect, int left, int right, int bottom, int top, unsigned int colour)
-    {
+    { // draw rectangle strip-by-strip
         left = rangeRestrict(left, 0, windowRect.width);
         right = rangeRestrict(right, 0, windowRect.width);
         bottom = rangeRestrict(bottom, 0, windowRect.height);

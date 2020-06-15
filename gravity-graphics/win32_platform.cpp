@@ -5,18 +5,18 @@
 
 #include "renderer.h"
 
-bool bRunning = true; // do game loop
+bool bRunning = true; // game loop continuation flag
 
-struct RenderState
+struct RenderState // global variables
 {
     renderer::WindowRect windowRect;
     BITMAPINFO bitmapInfo;
 };
 
-RenderState renderState;
+RenderState renderState; // instantiate the struct
 
 LRESULT CALLBACK windowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
+{ // called on window events
     LRESULT result = 0;
     switch (uMsg)
     {
@@ -27,20 +27,22 @@ LRESULT CALLBACK windowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         }
         break;
     case WM_SIZE: // window size changed
-        {
+        { // must remake pixel buffer
+            // find new dimensions
             RECT rect;
             GetClientRect(hwnd, &rect);
-            renderState.windowRect.width = rect.right - rect.left; // find new dimensions
+            renderState.windowRect.width = rect.right - rect.left;
             renderState.windowRect.height = rect.bottom - rect.top;
 
             // make buffer
             int bufferSize = renderState.windowRect.width * renderState.windowRect.height * sizeof(unsigned int);
 
             if (renderState.windowRect.buffer) // memory already allocated
-            {
+            { // release the existing buffer
                 VirtualFree(renderState.windowRect.buffer, 0, MEM_RELEASE);
             }
 
+            // allocate new buffer
             renderState.windowRect.buffer = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
             renderState.bitmapInfo.bmiHeader.biSize = sizeof(renderState.bitmapInfo.bmiHeader);
@@ -74,6 +76,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     HWND window = CreateWindow(WindowClass.lpszClassName, "Gravity", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
     HDC hdc = GetDC(window); // get device context - reference for drawing to window
 
+    // declare game-loop variables
     float xVel = 2;
     float thrust = 0.01;
     float yVel = 0;
@@ -92,6 +95,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     float squaredDist;
     float gravForce;
 
+    // game-loop
     while (bRunning)
     {
         // get input
@@ -100,13 +104,13 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         {
             switch (message.message)
             {
-            case (WM_KEYUP):
+            case (WM_KEYUP): // is a key event
             case (WM_KEYDOWN):
                 {
                     unsigned int keyOrd = (unsigned int)message.wParam;
                     bool bKeyDown = (((message.lParam & (1 << 31)) == 0)); // gets flag for determining up/down
                     switch (message.wParam)
-                    {
+                    { // simple key handling, will need redoing later
                     case (VK_RIGHT):
                         moveRight = bKeyDown;
                         break;
@@ -132,17 +136,23 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 
         // simulate
 
+        // factor in acceleration of gravity
         squaredDist = (gravX - xPos) * (gravX - xPos) + (gravY - yPos) * (gravY - yPos);
         gravForce = gStrength * pow(squaredDist, -1.5);
         xVel += gravForce * (gravX - xPos);
         yVel += gravForce * (gravY - yPos);
 
+        // factor in acceleration of thrusters
         xVel += thrust * (moveRight - moveLeft);
         yVel += thrust * (moveUp - moveDown);
+
+        // move craft
         xPos += xVel;
         yPos += yVel;
         xInt = xPos;
         yInt = yPos;
+
+        // draw
         renderer::fillScreen(renderState.windowRect, 0x000020);
         renderer::drawRect(renderState.windowRect, xInt - 10, xInt + 10, yInt - 10, yInt + 10, 0xff0000); // draw craft
         renderer::drawRect(renderState.windowRect, gravX - 10, gravX + 10, gravY - 10, gravY + 10, 0x00ff00); // draw planet
